@@ -4,36 +4,36 @@ import { useState } from 'react'
 function Upload() {
     const [selectedImage, setSelectedImage] = useState(null); // State to store the selected image file
 
+    const [processedImage, setProcessedImage] = useState(null); // State to store the processed image with detected faces
+    const [loading, setLoading] = useState(false);
+
     function handleImageChange(event) {
         const file = event.target.files[0]; // Get the first selected file (if multiple files are allowed, you can handle them accordingly)
         setSelectedImage(file); // Store the selected image in state
-        console.log(selectedImage); // Log the selected image file to the console for debugging purposes
     }
 
     async function handleDetectFaces() {
-        if (!selectedImage) {
-            console.error("No image selected for face detection.");
-            return;
-        }
+        if (!selectedImage) return;
 
         const formData = new FormData();
-        formData.append('image', selectedImage);
+        formData.append("image", selectedImage);
 
-        try {
-            const response = await fetch('http://localhost:9000/detect_faces', {
-                method: 'POST',
-                body: formData,
-            });
+        setLoading(true);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+        const response = await fetch("http://localhost:9000/detect", {
+            method: "POST",
+            body: formData,
+        });
+        
+        const data = await response.json();
 
-            const data = await response.json();
-            console.log(data); // Log the response data for debugging purposes
-        } catch (error) {
-        console.error("Error during face detection:", error);
-    }   
+        const imageUrl = `data:image/jpeg;base64,${data.image}`;
+
+        setLoading(false);
+
+        setProcessedImage(imageUrl);
+    }
+
 
   return (
     <div className="container">
@@ -62,6 +62,19 @@ function Upload() {
           </div>
         )}
 
+        {loading && (
+            <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Processing image...</p>
+            </div>
+            )}
+
+        {processedImage && (
+          <div className="image-preview">
+            <img className='Preview_of_uploaded' src={processedImage} alt="Proccessed" />
+          </div>
+        )}
+
         <button className="detect-btn" onClick={handleDetectFaces}>
           Detect Faces
         </button>
@@ -69,6 +82,5 @@ function Upload() {
     </div>
   );
 }
-
 
 export default Upload;

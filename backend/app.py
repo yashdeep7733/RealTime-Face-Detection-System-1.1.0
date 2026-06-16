@@ -2,8 +2,10 @@ from flask import Flask, jsonify, request
 import numpy as np
 import cv2
 import base64
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app) # Enabling CORS for the Flask app to allow cross-origin requests from the frontend
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
@@ -46,8 +48,8 @@ def GettingImage():
         return jsonify({"error": "Failed to encode image"}), 500
 
     return jsonify({
-        "Faces": len(faces) if len(faces) > 0 else "No faces detected",
-        "Image": base64.b64encode(jpg_bytes).decode('utf-8')
+        "faces": len(faces) if len(faces) > 0 else "No faces detected",
+        "image": base64.b64encode(jpg_bytes).decode('utf-8') # Encoding the image bytes to base64 and decoding it to a UTF-8 string for JSON response
         })
 
 if __name__ == "__main__":
