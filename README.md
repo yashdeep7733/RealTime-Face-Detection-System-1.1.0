@@ -80,6 +80,6 @@ npm run dev
 Example detection below
 
 <p align="center">
-  <img src="initial.jpeg" width="500"/>
+  <img src="initial.jpg" width="500"/>
   <img src="processed.jpeg" width="500"/>
 </p>
